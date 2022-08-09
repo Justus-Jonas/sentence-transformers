@@ -51,7 +51,7 @@ class CrossEncoder():
         self.tokenizer = AutoTokenizer.from_pretrained(model_name, **tokenizer_args)
 
         if 'special_tokens' in tokenizer_args:
-            logger.info("added special tokens: {}".format(self.tokenizer_args['special_tokens']))
+            logger.info("added special tokens: {}".format(tokenizer_args['special_tokens']))
             self.tokenizer.add_special_tokens(special_tokens)
             self.model.resize_token_embeddings(len(self.tokenizer))
 
