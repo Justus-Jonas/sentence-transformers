@@ -53,7 +53,8 @@ class CrossEncoder():
         if 'special_tokens' in tokenizer_args:
             logger.info("added special tokens: {}".format(tokenizer_args['special_tokens']))
             self.tokenizer.add_special_tokens(special_tokens)
-            self.model.resize_token_embeddings(len(self.tokenizer))
+            logger.info("number of added special tokens: {}").format(self.model.resize_token_embeddings(len(self.tokenizer)))
+
 
         self.max_length = max_length
 
