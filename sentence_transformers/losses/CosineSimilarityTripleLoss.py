@@ -4,7 +4,7 @@ from typing import Iterable, Dict
 from ..SentenceTransformer import SentenceTransformer
 
 
-class CosineSimilarityLoss(nn.Module):
+class CosineSimilarityTripleLoss(nn.Module):
     """
     CosineSimilarityLoss expects, that the InputExamples consists of two texts and a float label.
 
