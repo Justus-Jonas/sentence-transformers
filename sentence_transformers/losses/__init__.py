@@ -1,4 +1,5 @@
 from .CosineSimilarityLoss import *
+from .CosineSimilarityTripleLoss import *
 from .SoftmaxLoss import *
 from .MultipleNegativesRankingLoss import *
 from .MultipleNegativesSymmetricRankingLoss import *
