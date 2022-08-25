@@ -29,7 +29,7 @@ class CosineSimilarityTripleLoss(nn.Module):
 
     """
     def __init__(self, model: SentenceTransformer, loss_fct = nn.MSELoss(), cos_score_transformation=nn.Identity()):
-        super(CosineSimilarityLoss, self).__init__()
+        super(CosineSimilarityTripleLoss, self).__init__()
         self.model = model
         self.loss_fct = loss_fct
         self.cos_score_transformation = cos_score_transformation
