@@ -50,13 +50,13 @@ class CrossEncoder():
         self.model = AutoModelForSequenceClassification.from_pretrained(model_name, config=self.config, **automodel_args)
         self.tokenizer = AutoTokenizer.from_pretrained(model_name, **tokenizer_args)
 
-        if 'special_tokens' in tokenizer_args:
-            logger.info("added special tokens: {}".format(tokenizer_args['special_tokens']))
-            self.tokenizer.add_special_tokens(special_tokens)
-            logger.info("number of added special tokens: {}").format(self.model.resize_token_embeddings(len(self.tokenizer)))
+        if 'additional_special_tokens' in tokenizer_args:
+            logger.info("number of added special tokens prior: {}".format(
+                    self.model.resize_token_embeddings(len(self.tokenizer))))
 
+            logger.info("number of added special tokens: {}".format(self.tokenizer.num_special_tokens_to_add))
 
-        self.max_length = max_length
+    self.max_length = max_length
 
         if device is None:
             device = "cuda" if torch.cuda.is_available() else "cpu"

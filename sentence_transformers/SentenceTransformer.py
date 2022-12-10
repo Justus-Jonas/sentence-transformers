@@ -573,6 +573,7 @@ class SentenceTransformer(nn.Sequential):
     def fit(self,
             train_objectives: Iterable[Tuple[DataLoader, nn.Module]],
             evaluator: SentenceEvaluator = None,
+            evaluators: List[SentenceEvaluator] = None,
             epochs: int = 1,
             steps_per_epoch = None,
             scheduler: str = 'WarmupLinear',
@@ -765,7 +766,7 @@ class SentenceTransformer(nn.Sequential):
             os.makedirs(output_path, exist_ok=True)
         return evaluator(self, output_path)
 
-    def _eval_during_training(self, evaluator, output_path, save_best_model, epoch, steps, callback):
+    def _eval_during_training(self, evaluator, evaluators, output_path, save_best_model, epoch, steps, callback):
         """Runs evaluation during the training"""
         eval_path = output_path
         if output_path is not None:
@@ -775,6 +776,8 @@ class SentenceTransformer(nn.Sequential):
 
         if evaluator is not None:
             score = evaluator(self, output_path=eval_path, epoch=epoch, steps=steps)
+            for eval in evaluators:
+                _ = eval(self, output_path=eval_path+eval.name, epoch=epoch, steps=steps)
             if callback is not None:
                 callback(score, epoch, steps)
             if score > self.best_score:
