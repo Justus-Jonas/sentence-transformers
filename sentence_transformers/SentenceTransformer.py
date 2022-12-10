@@ -733,7 +733,7 @@ class SentenceTransformer(nn.Sequential):
                 global_step += 1
 
                 if evaluation_steps > 0 and training_steps % evaluation_steps == 0:
-                    self._eval_during_training(evaluator, output_path, save_best_model, epoch, training_steps, callback)
+                    self._eval_during_training(evaluator, evaluators, output_path, save_best_model, epoch, training_steps, callback)
 
                     for loss_model in loss_models:
                         loss_model.zero_grad()
@@ -743,7 +743,7 @@ class SentenceTransformer(nn.Sequential):
                     self._save_checkpoint(checkpoint_path, checkpoint_save_total_limit, global_step)
 
 
-            self._eval_during_training(evaluator, output_path, save_best_model, epoch, -1, callback)
+            self._eval_during_training(evaluator,evaluators, output_path, save_best_model, epoch, -1, callback)
 
         if evaluator is None and output_path is not None:   #No evaluator, but output path: save final model version
             self.save(output_path)
@@ -774,10 +774,12 @@ class SentenceTransformer(nn.Sequential):
             eval_path = os.path.join(output_path, "eval")
             os.makedirs(eval_path, exist_ok=True)
 
-        if evaluator is not None:
-            score = evaluator(self, output_path=eval_path, epoch=epoch, steps=steps)
+        if evaluators is not None:
             for eval in evaluators:
                 _ = eval(self, output_path=eval_path+eval.name, epoch=epoch, steps=steps)
+
+        if evaluator is not None:
+            score = evaluator(self, output_path=eval_path, epoch=epoch, steps=steps)
             if callback is not None:
                 callback(score, epoch, steps)
             if score > self.best_score:
