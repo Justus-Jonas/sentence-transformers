@@ -56,7 +56,7 @@ class CrossEncoder():
 
             logger.info("number of added special tokens: {}".format(self.tokenizer.num_special_tokens_to_add))
 
-    self.max_length = max_length
+        self.max_length = max_length
 
         if device is None:
             device = "cuda" if torch.cuda.is_available() else "cpu"
