@@ -1,7 +1,7 @@
 import requests
 from torch import Tensor, device
 from typing import List, Callable
-from tqdm.autonotebook import tqdm
+import tqdm
 import sys
 import importlib
 import os
@@ -287,7 +287,7 @@ def http_get(url, path):
     with open(download_filepath, "wb") as file_binary:
         content_length = req.headers.get('Content-Length')
         total = int(content_length) if content_length is not None else None
-        progress = tqdm(unit="B", total=total, unit_scale=True)
+        progress = tqdm.autonotebook(unit="B", total=total, unit_scale=True)
         for chunk in req.iter_content(chunk_size=1024):
             if chunk: # filter out keep-alive new chunks
                 progress.update(len(chunk))
@@ -350,8 +350,6 @@ def community_detection(embeddings, threshold=0.75, min_community_size=10, batch
     Returns only communities that are larger than min_community_size. The communities are returned
     in decreasing order. The first element in each list is the central point in the community.
     """
-    if not isinstance(embeddings, torch.Tensor):
-        embeddings = torch.tensor(embeddings)
 
     threshold = torch.tensor(threshold, device=embeddings.device)
 
@@ -359,9 +357,9 @@ def community_detection(embeddings, threshold=0.75, min_community_size=10, batch
 
     # Maximum size for community
     min_community_size = min(min_community_size, len(embeddings))
-    sort_max_size = min(max(2 * min_community_size, 50), len(embeddings))
+    sort_max_size = min(max(2 * min_community_size, 500), len(embeddings))
 
-    for start_idx in range(0, len(embeddings), batch_size):
+    for start_idx in tqdm.tqdm(range(0, len(embeddings), batch_size), total=len(embeddings) // batch_size):
         # Compute cosine similarity scores
         cos_scores = cos_sim(embeddings[start_idx:start_idx + batch_size], embeddings)
 
@@ -377,7 +375,7 @@ def community_detection(embeddings, threshold=0.75, min_community_size=10, batch
                 top_val_large, top_idx_large = cos_scores[i].topk(k=sort_max_size, largest=True)
 
                 # Check if we need to increase sort_max_size
-                while top_val_large[-1] > threshold and sort_max_size < len(embeddings):
+                while top_val_large[-1] > threshold:
                     sort_max_size = min(2 * sort_max_size, len(embeddings))
                     top_val_large, top_idx_large = cos_scores[i].topk(k=sort_max_size, largest=True)
 
@@ -412,7 +410,6 @@ def community_detection(embeddings, threshold=0.75, min_community_size=10, batch
     unique_communities = sorted(unique_communities, key=lambda x: len(x), reverse=True)
 
     return unique_communities
-
 
 ##################
 #
